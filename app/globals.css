@@ -1,64 +1,31 @@
 @import "tailwindcss";
 
+@theme {
+  --color-background: #050505;
+  --color-foreground: #ffffff;
+  --color-primary: #9333ea; /* purple-600 */
+  --color-secondary: #ec4899; /* pink-500 */
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+}
+
 body {
-  margin: 0;
-  background: linear-gradient(135deg, #ff4d6d, #4d96ff);
-  font-family: Arial, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-.container {
-  max-width: 420px;
-  margin: auto;
-  padding: 20px;
-  color: #fff;
+/* Glassmorphism Utilities */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.header {
-  text-align: center;
-}
-
-.cta {
-  background: #ffd166;
-  color: #000;
-  padding: 12px;
-  border-radius: 10px;
-  text-align: center;
-  font-weight: bold;
-  margin: 20px 0;
-}
-
-.products {
-  display: grid;
-  gap: 16px;
-}
-
-.product {
-  background: #fff;
-  color: #000;
-  border-radius: 12px;
-  padding: 12px;
-  text-align: center;
-}
-
-.product img {
-  border-radius: 10px;
-  width: 100%;
-  height: auto;
-}
-
-.product a {
-  display: block;
-  background: #4d96ff;
-  color: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  text-decoration: none;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-.footer {
-  text-align: center;
-  margin-top: 25px;
-  font-size: 13px;
+.glass-button {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
