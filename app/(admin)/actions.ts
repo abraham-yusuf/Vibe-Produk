@@ -4,6 +4,8 @@ import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { Campaign, Product, ClickStats } from '@/types'
 
+// --- Admin Actions ---
+
 export async function getCampaigns(): Promise<Campaign[]> {
   const supabase = await createClient()
   const { data, error } = await supabase.from('campaigns').select('*').order('created_at', { ascending: false })
@@ -107,4 +109,53 @@ export async function getDashboardStats() {
     bestPlatform,
     weeklyClicks: (weeklyClicks || []) as ClickStats[],
   }
+}
+
+// --- Public/Landing Page Actions ---
+
+export async function getCampaignBySlug(slug: string): Promise<Campaign | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('campaigns')
+    .select('*')
+    .eq('slug', slug)
+    .single()
+
+  if (error) {
+    console.error(`Error fetching campaign with slug ${slug}:`, error)
+    return null
+  }
+  return data as Campaign
+}
+
+export async function getProductsByCampaign(campaignId: string): Promise<Product[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('campaign_id', campaignId)
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error(`Error fetching products for campaign ${campaignId}:`, error)
+    return []
+  }
+  return data as Product[]
+}
+
+export async function recordClick(productId: string, platform: string, userAgent: string, referrer: string) {
+  const supabase = await createClient()
+  const { error } = await supabase.from('clicks').insert({
+    product_id: productId,
+    platform,
+    user_agent: userAgent,
+    visitor_source: referrer,
+  })
+
+  if (error) {
+    console.error('Error recording click:', error)
+    return { success: false }
+  }
+  return { success: true }
 }
