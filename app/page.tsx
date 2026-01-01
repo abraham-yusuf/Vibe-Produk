@@ -22,14 +22,14 @@ export default function Home() {
 
       <section className="products">
         <ProductCard
-          image="/produk1.jpg"
+          src="/produk1.jpg"
           title="Dispenser Sabun Otomatis"
           price="Murah • Kepake tiap hari"
           link="LINK_AFFILIATE_1"
         />
 
         <ProductCard
-          image="/produk2.jpg"
+          src="/produk2.jpg"
           title="Lampu LED Sensor"
           price="Harga &lt; 50rb"
           link="LINK_AFFILIATE_2"
