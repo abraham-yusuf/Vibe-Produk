@@ -1,70 +1,168 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { deleteProduct } from '@/app/(admin)/actions';
-import { FiTrash2 } from 'react-icons/fi';
-import GlassCard from '@/components/GlassCard';
-import { Product } from '@/types';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { FiTrash2, FiExternalLink, FiToggleLeft, FiToggleRight } from 'react-icons/fi'
+import Image from 'next/image'
 
-export default function ProductList({ products }: { products: Product[] }) {
-  if (!products || products.length === 0) {
+interface Product {
+  id: string
+  name: string
+  description: string | null
+  image_url: string | null
+  affiliate_url_shopee: string | null
+  affiliate_url_tiktok: string | null
+  is_active: boolean | null
+  campaigns: {
+    slug: string
+    title: string
+  } | null
+}
+
+interface ProductListProps {
+  products: Product[]
+}
+
+export default function ProductList({ products }: ProductListProps) {
+  const router = useRouter()
+  const supabase = createClient()
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) return
+
+    setDeletingId(id)
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id)
+
+      if (error) throw error
+      router.refresh()
+    } catch (err) {
+      console.error('Delete error:', err)
+      alert('Failed to delete product')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
+  const handleToggleActive = async (id: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({ is_active: !currentStatus })
+        .eq('id', id)
+
+      if (error) throw error
+      router.refresh()
+    } catch (err) {
+      console.error('Toggle error:', err)
+      alert('Failed to toggle product status')
+    }
+  }
+
+  if (products.length === 0) {
     return (
-      <div className="text-center text-gray-500 py-12">
-        No products found. Add one above!
+      <div className="text-center py-12">
+        <p className="text-gray-400">No products yet. Add your first product above!</p>
       </div>
-    );
+    )
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="space-y-4">
       {products.map((product) => (
-        <GlassCard key={product.id} className="relative group overflow-hidden">
-          <div className="aspect-square w-full bg-white/5 rounded-lg mb-4 overflow-hidden relative">
-            {product.image_url ? (
-               // eslint-disable-next-line @next/next/no-img-element
-               <img
-                 src={product.image_url}
-                 alt={product.name}
-                 className="w-full h-full object-cover transition-transform group-hover:scale-105"
-               />
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
-                No Image
+        <div
+          key={product.id}
+          className="p-6 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-200"
+        >
+          <div className="flex gap-6">
+            {/* Product Image */}
+            {product.image_url && (
+              <div className="flex-shrink-0">
+                <div className="w-24 h-24 rounded-lg overflow-hidden bg-white/5 relative">
+                  <Image
+                    src={product.image_url}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               </div>
             )}
-          </div>
 
-          <div className="flex justify-between items-start mb-2">
-            <div>
-              <h3 className="font-bold text-lg text-white truncate">{product.name}</h3>
-              <p className="text-sm text-gray-400">{product.campaigns?.title || 'No Campaign'}</p>
+            {/* Product Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-1">{product.name}</h3>
+                  {product.campaigns && (
+                    <p className="text-sm text-purple-400">
+                      Campaign: {product.campaigns.title}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleToggleActive(product.id, product.is_active || false)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      product.is_active
+                        ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                        : 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30'
+                    }`}
+                    title={product.is_active ? 'Active' : 'Inactive'}
+                  >
+                    {product.is_active ? <FiToggleRight className="w-5 h-5" /> : <FiToggleLeft className="w-5 h-5" />}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(product.id)}
+                    disabled={deletingId === product.id}
+                    className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors disabled:opacity-50"
+                    title="Delete"
+                  >
+                    <FiTrash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {product.description && (
+                <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                  {product.description}
+                </p>
+              )}
+
+              {/* Affiliate Links */}
+              <div className="flex flex-wrap gap-3">
+                {product.affiliate_url_shopee && (
+                  <a
+                    href={product.affiliate_url_shopee}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 text-orange-400 text-sm rounded-lg hover:bg-orange-500/30 transition-colors"
+                  >
+                    <span>Shopee</span>
+                    <FiExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+                {product.affiliate_url_tiktok && (
+                  <a
+                    href={product.affiliate_url_tiktok}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-pink-500/20 text-pink-400 text-sm rounded-lg hover:bg-pink-500/30 transition-colors"
+                  >
+                    <span>TikTok</span>
+                    <FiExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
             </div>
-            <button
-              onClick={() => deleteProduct(product.id)}
-              className="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
-            >
-              <FiTrash2 />
-            </button>
           </div>
-
-          <p className="text-sm text-gray-400 line-clamp-2 mb-4">
-            {product.description}
-          </p>
-
-          <div className="flex gap-2">
-            {product.affiliate_url_shopee && (
-              <a href={product.affiliate_url_shopee} target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-2 bg-orange-500/20 text-orange-500 rounded-lg text-xs font-bold hover:bg-orange-500 hover:text-white transition-colors">
-                Shopee
-              </a>
-            )}
-            {product.affiliate_url_tiktok && (
-               <a href={product.affiliate_url_tiktok} target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-2 bg-black/40 text-white border border-white/10 rounded-lg text-xs font-bold hover:bg-black transition-colors">
-                TikTok
-              </a>
-            )}
-          </div>
-        </GlassCard>
+        </div>
       ))}
     </div>
-  );
-}
+  )
+        }
