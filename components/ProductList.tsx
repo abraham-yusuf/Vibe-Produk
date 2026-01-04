@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import type { Database } from '@/lib/types/database'
 import { FiTrash2, FiExternalLink, FiToggleLeft, FiToggleRight } from 'react-icons/fi'
 import Image from 'next/image'
 
@@ -51,9 +52,14 @@ export default function ProductList({ products }: ProductListProps) {
 
   const handleToggleActive = async (id: string, currentStatus: boolean) => {
     try {
+      const updateData = {
+        is_active: !currentStatus
+      }
+      
       const { error } = await supabase
         .from('products')
-        .update({ is_active: !currentStatus })
+        // @ts-ignore - Supabase type inference issue
+        .update(updateData)
         .eq('id', id)
 
       if (error) throw error

@@ -1,12 +1,16 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, type HTMLMotionProps } from 'framer-motion';
 
-interface ViralButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ViralButtonProps {
   variant?: 'primary' | 'secondary' | 'outline';
   children: React.ReactNode;
   fullWidth?: boolean;
+  className?: string;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
 }
 
 export default function ViralButton({
@@ -14,7 +18,9 @@ export default function ViralButton({
   children,
   fullWidth = false,
   className = '',
-  ...props
+  onClick,
+  type = 'button',
+  disabled = false,
 }: ViralButtonProps) {
   const baseStyles = "font-bold rounded-xl py-3 px-6 transition-all duration-200 flex items-center justify-center gap-2";
 
@@ -29,7 +35,9 @@ export default function ViralButton({
       whileTap={{ scale: 0.95 }}
       whileHover={{ scale: 1.02 }}
       className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
-      {...props}
+      onClick={onClick}
+      type={type}
+      disabled={disabled}
     >
       {children}
     </motion.button>

@@ -14,12 +14,12 @@ export default async function DashboardPage() {
     .select('*', { count: 'exact', head: true })
 
   // Fetch clicks by platform
-  const { data: shopeeClicks } = await supabase
+  const { count: shopeeClicks } = await supabase
     .from('clicks')
     .select('id', { count: 'exact', head: true })
     .eq('platform', 'shopee')
 
-  const { data: tiktokClicks } = await supabase
+  const { count: tiktokClicks } = await supabase
     .from('clicks')
     .select('id', { count: 'exact', head: true })
     .eq('platform', 'tiktok')
@@ -31,6 +31,7 @@ export default async function DashboardPage() {
     .eq('is_active', true)
 
   // Fetch weekly clicks data for chart
+  // @ts-ignore - Supabase type inference issue
   const { data: weeklyData } = await supabase.rpc('get_weekly_clicks')
 
   // Calculate best platform

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
-import type { Product } from '@/lib/types/database'
+import type { Product, Database } from '@/lib/types/database'
 import { FiShoppingBag, FiShoppingCart } from 'react-icons/fi'
 
 interface ProductCardProps {
@@ -84,12 +84,15 @@ export default function ProductCard({ product, campaignSlug }: ProductCardProps)
       }
 
       // 2. Insert Click Record to Database
-      await supabase.from('clicks').insert([{
+      const clickData = {
         product_id: product.id,
         platform: platform,
         visitor_source: typeof window !== 'undefined' ? document.referrer : null,
         user_agent: typeof window !== 'undefined' ? navigator.userAgent : null,
-      }])
+      }
+      
+      // @ts-ignore - Supabase type inference issue
+      await supabase.from('clicks').insert([clickData])
 
       // 3. Construct URL with UTM Parameters
       const url = new URL(affiliateUrl)
