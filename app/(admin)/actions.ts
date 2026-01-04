@@ -1,13 +1,13 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { Campaign, Product, ClickStats } from '@/types'
+import type { Campaign, Product, WeeklyClick, Database } from '@/lib/types/database'
 
 // --- Admin Actions ---
 
 export async function getCampaigns(): Promise<Campaign[]> {
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
   const { data, error } = await supabase.from('campaigns').select('*').order('created_at', { ascending: false })
 
   if (error) {
@@ -18,7 +18,7 @@ export async function getCampaigns(): Promise<Campaign[]> {
 }
 
 export async function getProducts(): Promise<Product[]> {
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
   const { data, error } = await supabase
     .from('products')
     .select('*, campaigns(title)')
@@ -32,23 +32,25 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function createProduct(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
 
   const name = formData.get('name') as string
   const campaign_id = formData.get('campaign_id') as string
-  const description = formData.get('description') as string
-  const image_url = formData.get('image_url') as string
-  const affiliate_url_shopee = formData.get('affiliate_url_shopee') as string
-  const affiliate_url_tiktok = formData.get('affiliate_url_tiktok') as string
+  const description = formData.get('description') as string | null
+  const image_url = formData.get('image_url') as string | null
+  const affiliate_url_shopee = formData.get('affiliate_url_shopee') as string | null
+  const affiliate_url_tiktok = formData.get('affiliate_url_tiktok') as string | null
 
-  const { error } = await supabase.from('products').insert({
+  const productData: Database['public']['Tables']['products']['Insert'] = {
     name,
     campaign_id,
-    description,
-    image_url,
-    affiliate_url_shopee,
-    affiliate_url_tiktok,
-  })
+    description: description || null,
+    image_url: image_url || null,
+    affiliate_url_shopee: affiliate_url_shopee || null,
+    affiliate_url_tiktok: affiliate_url_tiktok || null,
+  }
+
+  const { error } = await supabase.from('products').insert([productData])
 
   if (error) {
     console.error('Error creating product:', error)
@@ -60,7 +62,7 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function deleteProduct(id: string) {
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
   const { error } = await supabase.from('products').delete().eq('id', id)
 
   if (error) {
@@ -73,7 +75,7 @@ export async function deleteProduct(id: string) {
 }
 
 export async function getDashboardStats() {
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
 
   // Fetch total clicks
   const { count: totalClicks, error: clicksError } = await supabase
@@ -107,14 +109,14 @@ export async function getDashboardStats() {
   return {
     totalClicks: totalClicks || 0,
     bestPlatform,
-    weeklyClicks: (weeklyClicks || []) as ClickStats[],
+    weeklyClicks: (weeklyClicks || []) as WeeklyClick[],
   }
 }
 
 // --- Public/Landing Page Actions ---
 
 export async function getCampaignBySlug(slug: string): Promise<Campaign | null> {
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
   const { data, error } = await supabase
     .from('campaigns')
     .select('*')
@@ -129,7 +131,7 @@ export async function getCampaignBySlug(slug: string): Promise<Campaign | null> 
 }
 
 export async function getProductsByCampaign(campaignId: string): Promise<Product[]> {
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
   const { data, error } = await supabase
     .from('products')
     .select('*')
@@ -145,13 +147,16 @@ export async function getProductsByCampaign(campaignId: string): Promise<Product
 }
 
 export async function recordClick(productId: string, platform: string, userAgent: string, referrer: string) {
-  const supabase = await createClient()
-  const { error } = await supabase.from('clicks').insert({
+  const supabase = await createServerSupabaseClient()
+  
+  const clickData: Database['public']['Tables']['clicks']['Insert'] = {
     product_id: productId,
     platform,
     user_agent: userAgent,
     visitor_source: referrer,
-  })
+  }
+  
+  const { error } = await supabase.from('clicks').insert([clickData])
 
   if (error) {
     console.error('Error recording click:', error)

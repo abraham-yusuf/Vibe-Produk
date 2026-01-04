@@ -91,4 +91,4 @@ export default function PixelScript({ tiktokPixel, metaPixel, gtmId }: PixelScri
       )}
     </>
   )
-      }
+}

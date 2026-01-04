@@ -84,12 +84,12 @@ export default function ProductCard({ product, campaignSlug }: ProductCardProps)
       }
 
       // 2. Insert Click Record to Database
-      await supabase.from('clicks').insert({
+      await supabase.from('clicks').insert([{
         product_id: product.id,
         platform: platform,
         visitor_source: typeof window !== 'undefined' ? document.referrer : null,
         user_agent: typeof window !== 'undefined' ? navigator.userAgent : null,
-      })
+      }])
 
       // 3. Construct URL with UTM Parameters
       const url = new URL(affiliateUrl)
