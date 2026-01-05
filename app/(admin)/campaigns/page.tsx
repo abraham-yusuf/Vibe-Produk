@@ -21,7 +21,7 @@ export default async function CampaignsPage() {
 
   // Calculate stats
   const totalCampaigns = campaigns?.length || 0
-  const totalProducts = campaigns?.reduce((acc, c: any) => {
+  const totalProducts = campaigns?.reduce((acc, c) => {
     const count = c.products?.[0]?.count || 0
     return acc + count
   }, 0) || 0

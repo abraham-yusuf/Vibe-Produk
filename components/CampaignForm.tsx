@@ -120,8 +120,8 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
           gtm_id: '',
         })
       }
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }

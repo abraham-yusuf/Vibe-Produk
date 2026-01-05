@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 import GlassCard from '@/components/ui/GlassCard'
 import { FiTrendingUp, FiShoppingBag, FiShoppingCart, FiEye } from 'react-icons/fi'
 import WeeklyClicksChart from '@/components/WeeklyClicksChart'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -138,27 +139,27 @@ export default async function DashboardPage() {
       <GlassCard className="p-6">
         <h2 className="text-xl font-bold text-white mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <a
+          <Link
             href="/products"
             className="p-4 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/20 rounded-lg transition-all duration-200 group"
           >
             <p className="font-semibold text-white mb-1 group-hover:text-purple-400">Add New Product</p>
             <p className="text-sm text-gray-400">Create a new affiliate product</p>
-          </a>
-          <a
+          </Link>
+          <Link
             href="/campaigns"
             className="p-4 bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/20 rounded-lg transition-all duration-200 group"
           >
             <p className="font-semibold text-white mb-1 group-hover:text-pink-400">View Campaigns</p>
             <p className="text-sm text-gray-400">Manage your bio link pages</p>
-          </a>
-          <a
+          </Link>
+          <Link
             href="/analytics"
             className="p-4 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 rounded-lg transition-all duration-200 group"
           >
             <p className="font-semibold text-white mb-1 group-hover:text-blue-400">Deep Analytics</p>
             <p className="text-sm text-gray-400">View detailed insights</p>
-          </a>
+          </Link>
         </div>
       </GlassCard>
     </div>
