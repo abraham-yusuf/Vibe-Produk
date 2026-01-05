@@ -22,13 +22,13 @@ export default async function CampaignsPage() {
   const supabase = await createServerSupabaseClient()
 
   // Fetch all campaigns with product count
-  const { data: campaigns } = await supabase
+  const { data: campaigns } = (await supabase
     .from('campaigns')
     .select(`
       *,
       products (count)
     `)
-    .order('created_at', { ascending: false }) as { data: CampaignWithProductCount[] | null }
+    .order('created_at', { ascending: false })) as { data: CampaignWithProductCount[] | null }
 
   // Calculate stats
   const totalCampaigns = campaigns?.length || 0
