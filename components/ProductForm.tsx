@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import type { Campaign } from '@/lib/types/database'
+import type { Campaign, Database } from '@/lib/types/database'
 
 interface ProductFormProps {
   campaigns: Pick<Campaign, 'id' | 'slug' | 'title'>[]
@@ -32,12 +32,15 @@ export default function ProductForm({ campaigns }: ProductFormProps) {
     setError(null)
 
     try {
+      const productData = {
+        ...formData,
+        is_active: true,
+      }
+      
       const { error: insertError } = await supabase
         .from('products')
-        .insert([{
-          ...formData,
-          is_active: true,
-        }])
+        // @ts-ignore - Supabase type inference issue
+        .insert([productData])
 
       if (insertError) throw insertError
 

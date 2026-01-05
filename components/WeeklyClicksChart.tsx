@@ -55,4 +55,4 @@ export default function WeeklyClicksChart({ data }: WeeklyClicksChartProps) {
       </ResponsiveContainer>
     </div>
   )
-        }
+}

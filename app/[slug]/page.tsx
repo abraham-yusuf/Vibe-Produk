@@ -14,6 +14,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
   const supabase = await createServerSupabaseClient()
   
+  // @ts-ignore - Supabase type inference issue
   const { data: campaign } = await supabase
     .from('campaigns')
     .select('title')
@@ -21,6 +22,7 @@ export async function generateMetadata({ params }: PageProps) {
     .single()
 
   return {
+    // @ts-ignore - Supabase type inference issue
     title: campaign ? `${campaign.title} | Vibe Produk ID` : 'Vibe Produk ID',
     description: 'Produk viral pilihan terbaik dengan harga spesial',
   }
@@ -31,6 +33,7 @@ export default async function PublicLandingPage({ params }: PageProps) {
   const supabase = await createServerSupabaseClient()
 
   // Fetch campaign by slug
+  // @ts-ignore - Supabase type inference issue
   const { data: campaign, error } = await supabase
     .from('campaigns')
     .select('*')
@@ -42,20 +45,26 @@ export default async function PublicLandingPage({ params }: PageProps) {
   }
 
   // Fetch active products for this campaign
+  // @ts-ignore - Supabase type inference issue
   const { data: products } = await supabase
     .from('products')
     .select('*')
+    // @ts-ignore - Supabase type inference issue
     .eq('campaign_id', campaign.id)
     .eq('is_active', true)
     .order('created_at', { ascending: false })
+
+  // Type assertions for TypeScript
+  const typedCampaign = campaign as any
+  const typedProducts = (products || []) as any[]
 
   return (
     <>
       {/* Inject Tracking Pixels */}
       <PixelScript
-        tiktokPixel={campaign.pixel_tiktok}
-        metaPixel={campaign.pixel_meta}
-        gtmId={campaign.gtm_id}
+        tiktokPixel={typedCampaign.pixel_tiktok}
+        metaPixel={typedCampaign.pixel_meta}
+        gtmId={typedCampaign.gtm_id}
       />
 
       <div className="min-h-screen bg-vibe-dark relative overflow-hidden">
@@ -79,7 +88,7 @@ export default async function PublicLandingPage({ params }: PageProps) {
 
             {/* Title */}
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-vibe bg-clip-text text-transparent animate-pulse-slow">
-              {campaign.title}
+              {typedCampaign.title}
             </h1>
 
             {/* Description */}
@@ -115,12 +124,12 @@ export default async function PublicLandingPage({ params }: PageProps) {
 
           {/* Products Grid */}
           <main className="space-y-6">
-            {products && products.length > 0 ? (
-              products.map((product) => (
+            {typedProducts.length > 0 ? (
+              typedProducts.map((product: any) => (
                 <ProductCard
                   key={product.id}
                   product={product}
-                  campaignSlug={campaign.slug}
+                  campaignSlug={typedCampaign.slug}
                 />
               ))
             ) : (
@@ -143,37 +152,4 @@ export default async function PublicLandingPage({ params }: PageProps) {
       </div>
     </>
   )
-            }         <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-           {campaign.title}
-         </h1>
-         <p className="text-gray-400 text-lg">
-            Rekomendasi produk viral termurah & terpercaya.
-            Klik tombol dibawah untuk checkout! 👇
-         </p>
-       </div>
-
-       {/* Product Grid */}
-       <main className="max-w-md mx-auto px-4 pb-20 space-y-6 relative z-10">
-         {products.length > 0 ? (
-           products.map((product) => (
-             <ProductCard
-               key={product.id}
-               product={product}
-               pixel_tiktok={campaign.pixel_tiktok}
-               pixel_meta={campaign.pixel_meta}
-             />
-           ))
-         ) : (
-           <GlassCard className="text-center py-12 text-gray-500">
-             Belum ada produk di campaign ini.
-           </GlassCard>
-         )}
-       </main>
-
-       {/* Floating Footer / Branding */}
-       <footer className="text-center pb-8 text-sm text-gray-600 relative z-10">
-         Powered by <span className="font-bold text-purple-500">Vibe Produk ID</span>
-       </footer>
-    </div>
-  );
 }

@@ -10,10 +10,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import GlassCard from '@/components/GlassCard';
-import { ClickStats } from '@/types';
+import GlassCard from '@/components/ui/GlassCard';
+import type { WeeklyClick } from '@/lib/types/database';
 
-export default function DashboardChart({ data }: { data: ClickStats[] }) {
+export default function DashboardChart({ data }: { data: WeeklyClick[] }) {
   if (!data || data.length === 0) {
      return (
         <GlassCard className="h-96 flex items-center justify-center text-gray-500">
