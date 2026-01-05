@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi'
+import Link from 'next/link'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -106,12 +107,12 @@ export default function LoginForm() {
             Remember me
           </span>
         </label>
-        <a
+        <Link
           href="/forgot-password"
           className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
         >
           Forgot password?
-        </a>
+        </Link>
       </div>
 
       {/* Submit Button */}

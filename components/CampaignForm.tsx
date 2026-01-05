@@ -80,7 +80,7 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
             pixel_tiktok: formData.pixel_tiktok || null,
             pixel_meta: formData.pixel_meta || null,
             gtm_id: formData.gtm_id || null,
-          })
+          } as never)
           .eq('id', campaign.id)
 
         if (updateError) throw updateError
@@ -94,7 +94,7 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
             pixel_tiktok: formData.pixel_tiktok || null,
             pixel_meta: formData.pixel_meta || null,
             gtm_id: formData.gtm_id || null,
-          }])
+          }] as never)
 
         if (insertError) throw insertError
       }
@@ -120,8 +120,8 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
           gtm_id: '',
         })
       }
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
