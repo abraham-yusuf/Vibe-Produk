@@ -44,11 +44,15 @@ export default function CampaignList({ campaigns }: CampaignListProps) {
     }
   }
 
-  const handleCopyUrl = (slug: string) => {
-    const url = `${window.location.origin}/${slug}`
-    navigator.clipboard.writeText(url)
-    setCopiedSlug(slug)
-    setTimeout(() => setCopiedSlug(null), 2000)
+  const handleCopyUrl = async (slug: string) => {
+    try {
+      const url = `${window.location.origin}/${slug}`
+      await navigator.clipboard.writeText(url)
+      setCopiedSlug(slug)
+      setTimeout(() => setCopiedSlug(null), 2000)
+    } catch (err) {
+      console.error('Copy error:', err)
+    }
   }
 
   if (campaigns.length === 0) {

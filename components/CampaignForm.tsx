@@ -74,7 +74,6 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
         // Update existing campaign
         const { error: updateError } = await supabase
           .from('campaigns')
-          // @ts-expect-error - Supabase type inference issue
           .update({
             slug: formData.slug,
             title: formData.title,
@@ -89,7 +88,6 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
         // Create new campaign
         const { error: insertError } = await supabase
           .from('campaigns')
-          // @ts-expect-error - Supabase type inference issue
           .insert([{
             slug: formData.slug,
             title: formData.title,
@@ -101,13 +99,16 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
         if (insertError) throw insertError
       }
 
-      // Close modal and refresh
-      const modal = document.getElementById('campaign-modal')
-      if (modal) modal.classList.add('hidden')
+      // Success callback
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        // Close modal and refresh if no callback
+        const modal = document.getElementById('campaign-modal')
+        if (modal) modal.classList.add('hidden')
+      }
       
       router.refresh()
-      
-      if (onSuccess) onSuccess()
       
       // Reset form if creating new
       if (!campaign) {
