@@ -29,8 +29,8 @@ export default function Sidebar({ user }: SidebarProps) {
 
   const navItems = [
     { icon: FiHome, label: 'Dashboard', href: '/dashboard' },
+    { icon: FiBarChart2, label: 'Campaigns', href: '/campaigns' },
     { icon: FiPackage, label: 'Products', href: '/products' },
-    { icon: FiBarChart2, label: 'Analytics', href: '/analytics' },
     { icon: FiSettings, label: 'Settings', href: '/settings' },
   ]
 
