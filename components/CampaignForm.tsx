@@ -72,7 +72,8 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
 
       if (campaign) {
         // Update existing campaign
-        const { error: updateError } = await supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: updateError } = await (supabase as any)
           .from('campaigns')
           .update({
             slug: formData.slug,
@@ -86,7 +87,8 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
         if (updateError) throw updateError
       } else {
         // Create new campaign
-        const { error: insertError } = await supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: insertError } = await (supabase as any)
           .from('campaigns')
           .insert([{
             slug: formData.slug,

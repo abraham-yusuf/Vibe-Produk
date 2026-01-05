@@ -6,18 +6,29 @@ import CampaignModal from '@/components/CampaignModal'
 
 export const dynamic = 'force-dynamic'
 
+interface CampaignWithProductCount {
+  id: string
+  user_id: string | null
+  slug: string
+  title: string
+  pixel_tiktok: string | null
+  pixel_meta: string | null
+  gtm_id: string | null
+  created_at: string
+  products?: { count: number }[]
+}
+
 export default async function CampaignsPage() {
   const supabase = await createServerSupabaseClient()
 
   // Fetch all campaigns with product count
-  // @ts-ignore - Supabase type inference limitation with count aggregates
   const { data: campaigns } = await supabase
     .from('campaigns')
     .select(`
       *,
       products (count)
     `)
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false }) as { data: CampaignWithProductCount[] | null }
 
   // Calculate stats
   const totalCampaigns = campaigns?.length || 0
