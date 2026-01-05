@@ -48,14 +48,14 @@ export default async function CampaignsPage() {
         <GlassCard className="p-6">
           <p className="text-gray-400 text-sm mb-1">Active Products</p>
           <p className="text-3xl font-bold text-white">
-            {/* @ts-ignore - Supabase type inference limitation with count aggregates */}
+            {/* @ts-expect-error - Supabase type inference limitation with count aggregates */}
             {campaigns?.reduce((acc, c) => acc + (c.products?.[0]?.count || 0), 0) || 0}
           </p>
         </GlassCard>
         <GlassCard className="p-6">
           <p className="text-gray-400 text-sm mb-1">With Tracking</p>
           <p className="text-3xl font-bold text-white">
-            {/* @ts-ignore - Supabase type inference limitation with count aggregates */}
+            {/* @ts-expect-error - Supabase type inference limitation with count aggregates */}
             {campaigns?.filter(c => c.pixel_tiktok || c.pixel_meta || c.gtm_id).length || 0}
           </p>
         </GlassCard>
