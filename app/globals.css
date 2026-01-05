@@ -16,6 +16,7 @@ body {
   font-family: var(--font-inter);
   background-color: #050505;
   color: white;
+  overflow-x: hidden;
 }
 
 /* Custom Scrollbar */
@@ -53,6 +54,17 @@ body {
   animation: fade-in 0.6s ease-out;
 }
 
+/* Smooth sidebar transitions */
+@media (min-width: 1024px) {
+  .sidebar-collapsed {
+    margin-left: 5rem;
+  }
+  
+  .sidebar-expanded {
+    margin-left: 16rem;
+  }
+}
+
 /* Image Loading */
 img {
   max-width: 100%;
@@ -63,4 +75,9 @@ img {
 ::selection {
   background-color: rgba(168, 85, 247, 0.3);
   color: white;
+}
+
+/* Prevent body scroll when mobile menu is open */
+body.menu-open {
+  overflow: hidden;
 }
