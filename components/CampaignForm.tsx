@@ -72,8 +72,7 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
 
       if (campaign) {
         // Update existing campaign
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error: updateError } = await (supabase as any)
+        const { error: updateError } = await supabase
           .from('campaigns')
           .update({
             slug: formData.slug,
@@ -81,14 +80,13 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
             pixel_tiktok: formData.pixel_tiktok || null,
             pixel_meta: formData.pixel_meta || null,
             gtm_id: formData.gtm_id || null,
-          })
+          } as never)
           .eq('id', campaign.id)
 
         if (updateError) throw updateError
       } else {
         // Create new campaign
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error: insertError } = await (supabase as any)
+        const { error: insertError } = await supabase
           .from('campaigns')
           .insert([{
             slug: formData.slug,
@@ -96,7 +94,7 @@ export default function CampaignForm({ campaign, onSuccess }: CampaignFormProps)
             pixel_tiktok: formData.pixel_tiktok || null,
             pixel_meta: formData.pixel_meta || null,
             gtm_id: formData.gtm_id || null,
-          }])
+          }] as never)
 
         if (insertError) throw insertError
       }
